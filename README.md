@@ -53,6 +53,16 @@ The Bhagavad Gita consists of 18 chapters, each focusing on different aspects of
 | 17 | The Three Divisions of Faith | Sraddhatraya Vibhaga Yoga | 28 | Three types of faith |
 | 18 | The Way of Liberation | Moksa Sanyasa Yoga | 78 | Conclusion and path to liberation |
 
+>DEMO
+https://github.com/user-attachments/assets/9990a703-d751-4836-ae6e-71f0d31d72a6
+
+
+
+https://github.com/user-attachments/assets/9990a703-d751-4836-ae6e-71f0d31d72a6
+
+
+
+
 
 
 ### Why Graph the Gita?
