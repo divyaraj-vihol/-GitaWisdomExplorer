@@ -148,7 +148,7 @@ The Bhagavad Gita offers guidance for various life challenges. Below is a mappin
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/bhaskatripathi/graphGita
+   git clone 
    cd graphGita
    ```
 
@@ -189,17 +189,7 @@ Contributions are welcome. Please submit a pull request or open an issue for any
 ## How to Cite
 If you use **graphGita** in your research or project, please cite it as follows:
 
-### BibTeX Entry
-```bibtex
-@software{tripathi2024graphgita,
-  author       = {Bhaskar Tripathi},
-  title        = {graphGita: A Knowledge Graph Approach to Bhagavad Gita Interpretation},
-  year         = 2024,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.14211453},
-  url          = {https://doi.org/10.5281/zenodo.14211453}
-}
-```
+
 
 ## License
 
