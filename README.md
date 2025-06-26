@@ -142,14 +142,31 @@ The Bhagavad Gita offers guidance for various life challenges. Below is a mappin
 - **Cloud Services**: AWS (S3 for storage, Lambda for serverless functions)
 
 ### Requirements
+Based on the provided information, the "Requirements" section would typically list the software and services necessary for the project to run. Here's how it would look, assuming the previous context of graphGita and its functionalities:
 
+Requirements
+To run graphGita, you will need the following:
+
+Python: Version 3.x (specific minor version compatibility might be determined during development, but generally the latest stable 3.x is recommended).
+
+Pip: Python's package installer, usually bundled with Python.
+
+AWS Account: With access configured for:
+
+Amazon S3: For storing and retrieving data.
+
+Amazon Textract: For document text extraction and analysis.
+
+Claude API Access: An API key for interacting with the Anthropic Claude model.
+
+Git: For cloning the repository.
 
 ### Installation
 
 1. Clone the repository:
    ```bash
-   git clone 
-   cd graphGita
+git clone https://github.com/divyaraj-vihol/-GitaWisdomExplorer.git
+cd -GitaWisdomExplorer
    ```
 
 2. Install required packages:
