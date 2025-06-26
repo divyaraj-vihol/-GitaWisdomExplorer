@@ -164,10 +164,8 @@ Git: For cloning the repository.
 ### Installation
 
 1. Clone the repository:
-   ```bash
 git clone https://github.com/divyaraj-vihol/-GitaWisdomExplorer.git
 cd -GitaWisdomExplorer
-   ```
 
 2. Install required packages:
    ```bash
