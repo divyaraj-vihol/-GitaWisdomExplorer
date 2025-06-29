@@ -5,15 +5,8 @@ from streamlit_agraph import agraph, Node, Edge, Config
 from typing import Dict, List, Optional, Union, Tuple
 import os
 from gtts import gTTS
+import os
 from io import BytesIO
-import requests
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-import subprocess
-import asyncio
-
-# Initialize FastAPI app
-app = FastAPI()
 
 # Helper Functions
 def display_shloka_content(shloka, chapter_num):
@@ -30,8 +23,7 @@ def display_shloka_content(shloka, chapter_num):
                     filename=f"sanskrit_{chapter_num}_{shloka['shloka_number']}.mp3",
                     lang='hi'
                 )
-                if audio_file:
-                    st.audio(audio_file, format="audio/mp3")
+                st.audio(audio_file, format="audio/mp3")
         with col2:
             st.markdown("**Sanskrit Text:**")
             st.text(shloka_text)
@@ -54,8 +46,7 @@ def display_shloka_content(shloka, chapter_num):
                     filename=f"english_{chapter_num}_{shloka['shloka_number']}.mp3",
                     lang='en'
                 )
-                if audio_file:
-                    st.audio(audio_file, format="audio/mp3")
+                st.audio(audio_file, format="audio/mp3")
         
         # Display text sections
         with col2:
@@ -75,22 +66,16 @@ def display_shloka_content(shloka, chapter_num):
                 st.write(shloka['life_application'])
 
 def generate_audio(text: str, filename: str = "shloka.mp3", lang: str = 'hi'):
-    """Generate audio from text with Vercel-compatible error handling"""
-    try:
-        if len(text) > 1000:  # Limit text size for Vercel
-            text = text[:1000] + "... [truncated]"
-            
+    """Generate audio from text with language support and loading spinner"""
+    with st.spinner('Generating audio, please wait...'):
         if lang == 'en':
             lang = 'en-IN'  # Use Indian English accent
         
         audio_bytes = BytesIO()
-        tts = gTTS(text=text, lang=lang, slow=False)  # Faster generation
+        tts = gTTS(text=text, lang=lang)
         tts.write_to_fp(audio_bytes)
         audio_bytes.seek(0)
         return audio_bytes
-    except Exception as e:
-        st.error(f"Audio generation failed: {str(e)}")
-        return None
 
 def create_node(id: str, label: str, node_type: str) -> Node:
     """Helper function to create nodes with consistent styling"""
@@ -125,7 +110,7 @@ def create_edge(source: str, target: str, label: str = "") -> Edge:
 
 def create_agraph_config() -> Config:
     """Create consistent agraph configuration for graph visualization"""
-    return Config(
+    config = Config(
         width="100%",
         height=600,
         directed=True,
@@ -187,6 +172,7 @@ def create_agraph_config() -> Config:
             'padding': '10px'
         }
     )
+    return config
 
 def show_about_section():
     """Display the enhanced About Project section with emojis and better styling"""
@@ -236,38 +222,27 @@ def show_about_section():
     st.sidebar.markdown("---")
     st.sidebar.markdown("""
     <div style="text-align:center;font-size:14px;color:#666;">
-        Made with ❤️ by <strong>Divyaraj Vihol</strong>
+        Made with  by <strong>Divyaraj Vihol</strong>
     </div>
     """, unsafe_allow_html=True)
 
 class GitaGraphRAG:
     def __init__(self):
-        self.data_url = "https://raw.githubusercontent.com/divyaraj-vihol/-GitaWisdomExplorer/main/data/bhagavad_gita_complete.json"
-        self.data = self._load_data()  # This will now work
+        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.data_path = os.path.join(self.current_dir, 'data', 'bhagavad_gita_complete.json')
+        self.data = self._load_data()
         self.G = nx.Graph()
-        if self.data:
-            self.build_knowledge_graph()
-
-    def _load_data(self) -> Optional[Dict]:  # Must be indented under the class
+        self.build_knowledge_graph()
+        
+    def _load_data(self) -> Optional[Dict]:
         """Load the Bhagavad Gita JSON data"""
         try:
-            if 'VERCEL' in os.environ:
-                response = requests.get(self.data_url)
-                if response.status_code == 200:
-                    return response.json()
-                else:
-                    st.error(f"Failed to fetch data from URL: {response.status_code}")
-                    return None
-            else:
-                current_dir = os.path.dirname(os.path.abspath(__file__))
-                data_path = os.path.join(current_dir, 'data', 'bhagavad_gita_complete.json')
-                with open(data_path, 'r', encoding='utf-8') as f:
-                    return json.load(f)
+            with open(self.data_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return data
         except Exception as e:
             st.error(f"Error loading data: {str(e)}")
             return None
-
-    # Other methods must also be indented under the class...
             
     def build_knowledge_graph(self) -> None:
         """Build the knowledge graph from the loaded data"""
@@ -489,8 +464,7 @@ class GitaGraphRAG:
                                                 filename=f"sanskrit_{selected_chapter_num}_{shloka_num}.mp3",
                                                 lang='hi'
                                             )
-                                            if audio_file:
-                                                st.audio(audio_file, format="audio/mp3")
+                                            st.audio(audio_file, format="audio/mp3")
                                     with col2:
                                         st.markdown("**Sanskrit Text:**")
                                         st.text(shloka_text)
@@ -511,8 +485,7 @@ class GitaGraphRAG:
                                                 filename=f"english_{selected_chapter_num}_{shloka_num}.mp3",
                                                 lang='en'
                                             )
-                                            if audio_file:
-                                                st.audio(audio_file, format="audio/mp3")
+                                            st.audio(audio_file, format="audio/mp3")
                                     
                                     with col2:
                                         if 'transliteration' in shloka:
@@ -579,8 +552,7 @@ def find_chapters_by_theme(data, theme):
             matching_chapters.append(chapter)
     return matching_chapters
 
-def run_streamlit_app():
-    """Main function to run the Streamlit app"""
+def main():
     st.set_page_config(page_title="Bhagavad Gita Knowledge Graph", layout="wide")
     
     # Custom CSS for sidebar
@@ -671,8 +643,7 @@ def run_streamlit_app():
                                         filename=f"sanskrit_{selected_chapter_num}_{shloka['shloka_number']}.mp3",
                                         lang='hi'
                                     )
-                                    if audio_file:
-                                        st.audio(audio_file, format="audio/mp3")
+                                    st.audio(audio_file, format="audio/mp3")
                             with col2:
                                 st.markdown("**Sanskrit Text:**")
                                 st.text(shloka_text)
@@ -693,8 +664,7 @@ def run_streamlit_app():
                                         filename=f"english_{selected_chapter_num}_{shloka['shloka_number']}.mp3",
                                         lang='en'
                                     )
-                                    if audio_file:
-                                        st.audio(audio_file, format="audio/mp3")
+                                    st.audio(audio_file, format="audio/mp3")
                             
                             with col2:
                                 if 'transliteration' in shloka:
@@ -717,6 +687,7 @@ def run_streamlit_app():
                 
                 if 'first_render' not in st.session_state:
                     st.session_state.first_render = True
+                    st.rerun()
                 
                 nodes, edges = rag.visualize_chapter_graph(f"Chapter_{selected_chapter_num}")
                 config = create_agraph_config()
@@ -759,8 +730,7 @@ def run_streamlit_app():
                                         filename=f"sanskrit_{ref['chapter']}_{ref['shloka']}.mp3",
                                         lang='hi'
                                     )
-                                    if audio_file:
-                                        st.audio(audio_file, format="audio/mp3")
+                                    st.audio(audio_file, format="audio/mp3")
                             with col2:
                                 st.markdown("**Sanskrit Text:**")
                                 st.text(shloka_text)
@@ -781,8 +751,7 @@ def run_streamlit_app():
                                         filename=f"english_{ref['chapter']}_{ref['shloka']}.mp3",
                                         lang='en'
                                     )
-                                    if audio_file:
-                                        st.audio(audio_file, format="audio/mp3")
+                                    st.audio(audio_file, format="audio/mp3")
                             
                             with col2:
                                 if 'transliteration' in shloka:
@@ -892,40 +861,5 @@ def run_streamlit_app():
     elif view_option == "Ontology of Characters":
         rag.display_chapter_insights()
 
-@app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
-    """Root endpoint that runs the Streamlit app"""
-    try:
-        # Run Streamlit as a subprocess
-        process = subprocess.Popen(
-            ["streamlit", "run", "app.py", "--server.port=8501", "--server.headless=true"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        
-        # Wait for Streamlit to start
-        await asyncio.sleep(3)
-        
-        return """
-        <html>
-            <head>
-                <meta http-equiv="refresh" content="0; url=http://localhost:8501" />
-            </head>
-            <body>
-                <p>Redirecting to Streamlit...</p>
-            </body>
-        </html>
-        """
-    except Exception as e:
-        return f"""
-        <html>
-            <body>
-                <h1>Error starting Streamlit</h1>
-                <p>{str(e)}</p>
-            </body>
-        </html>
-        """
-
 if __name__ == "__main__":
-    # For local development
-    run_streamlit_app()
+    main()
