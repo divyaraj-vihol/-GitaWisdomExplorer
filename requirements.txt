@@ -19,3 +19,4 @@ streamlit-vertical-slider==1.0.4  # Optional: If you use vertical sliders for ve
 
 # --- Utility Libraries ---
 python-dotenv==1.0.1         # Manage API keys or configs via .env file
+
